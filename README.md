@@ -1,86 +1,111 @@
-# AWS Infrastructure: EC2 Web Server & Networking Architecture 🚀
+# ☁️ Arquitetura AWS: Alta Disponibilidade e Escalabilidade para APIs Backend
 
 [![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
-[![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://www.linux.org/)
-[![Ubuntu](https://img.shields.io/badge/Ubuntu-E94333?style=for-the-badge&logo=ubuntu&logoColor=white)](https://ubuntu.com/)
+[![Java/Spring](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)]()
+[![Infrastructure](https://img.shields.io/badge/Architecture-Resilient-success?style=for-the-badge)]()
 
-Este projeto demonstra a configuração de uma infraestrutura de rede completa na AWS, desde a criação de uma **VPC personalizada** até o deploy automatizado de um **Servidor Web Apache**, utilizando **Ubuntu Linux** como estação de gerenciamento local.
+Este repositório documenta a evolução de uma infraestrutura de nuvem, saindo de um ambiente de servidor único (Single Point of Failure) para uma **arquitetura distribuída, segura e altamente disponível**.
 
-## 📌 Visão Geral
-
-O objetivo principal foi isolar recursos em uma rede própria (**VPC-Desafio**), garantindo que o servidor web fosse configurado automaticamente no primeiro boot através de **User Data Scripts**, eliminando a necessidade de configuração manual pós-lançamento.
-
-### 🎯 Objetivos Concluídos
-
-- **Infraestrutura de Rede:** Criação de VPC, Subnets Públicas, Internet Gateway e Tabelas de Rotas.
-- **Automação de Boot:** Implementação de scripts Shell para instalação automática do Apache (httpd).
-- **Segurança:** Configuração de Security Groups específicos para tráfego HTTP (80) e SSH (22).
-- **Gerenciamento CLI:** Utilização da AWS CLI v2 para interação programática com o ambiente Cloud.
+Como Desenvolvedor Backend (Java/Spring Boot), o objetivo deste laboratório é dominar o ecossistema onde as aplicações rodam em produção, garantindo que a infraestrutura consiga escalar horizontalmente para suportar picos de tráfego sem degradação de performance.
 
 ---
 
-## 🏗️ Arquitetura do Projeto
+## 🗺️ Evolução da Arquitetura (Antes e Depois)
 
-Abaixo, o diagrama técnico representando a topologia da rede e o fluxo de comunicação entre os componentes:
+### O Problema: Arquitetura Inicial
 
-![Diagrama de Arquitetura](./diagrams/diagrama%20de%20ação.png)
+No cenário inicial, a aplicação residia em uma única instância EC2 localizada em uma sub-rede pública.
 
----
+- **Riscos:** Se a zona de disponibilidade falhar ou a instância sobrecarregar, a aplicação cai. Além disso, o servidor web fica exposto diretamente à internet pública.
 
-## 🛠️ Tecnologias e Ferramentas
+<p align="center">
+  <img src="./diagrams/00-architecture-initial.png" alt="Arquitetura Inicial" width="700"/>
+</p>
 
-- **Cloud:** Amazon Web Services (AWS).
-- **Computação:** instâncias EC2 (Família T3).
-- **Servidor Web:** Apache HTTP Server.
-- **S.O. Local:** Ubuntu Linux via Terminal.
-- **Scripting:** Bash (Shell Script).
+### A Solução: Arquitetura Final (Resiliente)
 
----
+A arquitetura foi refatorada para isolar a camada de aplicação e distribuir a carga dinamicamente.
 
-## 🚀 Implementação e Evidências
+- **Segurança:** As instâncias EC2 agora rodam em **Sub-redes Privadas**. Apenas o Application Load Balancer (ALB) tem acesso à internet.
+- **Resiliência:** O tráfego é distribuído entre múltiplas Zonas de Disponibilidade (Multi-AZ).
+- **Escalabilidade:** O Auto Scaling Group monitora a saúde e a carga das máquinas, criando ou destruindo instâncias sob demanda.
 
-### 1. Mapa de Recursos (VPC)
-
-Configuração visual da rede demonstrando a sub-rede pública devidamente roteada.
-![Mapa de Recursos](./screenshots/01-vpc-resource-map.png)
-
-### 2. Conectividade e Rotas
-
-Validação das tabelas de rotas e do Internet Gateway anexado para permitir acesso externo.
-![Tabelas de Rotas](./screenshots/02-tabelas-de-rotas.png)
-
-### 3. Automação (User Data)
-
-Logs de sistema que comprovam a execução do script de instalação automática durante a inicialização da instância.
-![Log do Sistema](./screenshots/05-system-log-httpd-success.png)
-
-### 4. Resultado Final
-
-Servidor web online e renderizando a página HTML personalizada com sucesso.
-![Aplicação Final](./screenshots/06-web-page-result.png)
+<p align="center">
+  <img src="./diagrams/00-architecture-final.jpg" alt="Arquitetura Final" width="700"/>
+</p>
 
 ---
 
-## 🔍 Troubleshooting & Aprendizados
+## 🛠️ Tecnologias e Componentes AWS Utilizados
 
-Durante o desenvolvimento, foram aplicadas técnicas de diagnóstico para garantir a integridade do ambiente:
-
-- **Diagnóstico de Rede:** Verificação de regras de entrada no Security Group para liberar tráfego web.
-- **Permissões Linux:** Ajuste de propriedade do diretório `/var/www/html` para permitir manipulação de arquivos pelo usuário padrão.
-- **Gestão de Chaves:** Uso de `chmod 400` para proteção de chaves PEM no ambiente Linux local.
-
----
-
-## 📂 Estrutura do Repositório
-
-- `/diagrams`: Desenhos técnicos da arquitetura.
-- `/screenshots`: Registros visuais das etapas concluídas.
-- `/scripts`: Script para testes de SSM e automação.
+- **VPC & Networking:** Sub-redes Públicas (para o ALB) e Privadas (para o Backend).
+- **Application Load Balancer (ALB):** Roteamento inteligente de tráfego HTTP e execução de _Health Checks_.
+- **EC2 Auto Scaling Groups (ASG):** Gerenciamento de frota usando _Target Tracking Policies_.
+- **Amazon CloudWatch:** Monitoramento de utilização de CPU e acionamento de métricas de expansão/redução.
 
 ---
 
-## ✍️ Autor
+## 🚀 Passo a Passo e Evidências da Implementação
 
-**Luis Fernando Alexandre dos Santos**
+Abaixo estão os testes práticos que comprovam o funcionamento da arquitetura.
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Perfil-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/luisfernando-eng/)
+### 1. Configuração do Target Group e Health Checks
+
+O Load Balancer precisa saber se a aplicação Java está pronta para receber tráfego. O Target Group foi configurado para monitorar a saúde das instâncias na sub-rede privada.
+
+<p align="center">
+  <img src="./assets/03-target-group-healthy.png" alt="Target Group Healthy" width="800"/>
+  <br><em>Status: Instâncias íntegras e prontas para o balanceamento.</em>
+</p>
+
+### 2. Estado Base da Aplicação
+
+O Auto Scaling foi configurado para manter uma base de **2 instâncias no mínimo**, garantindo a Alta Disponibilidade desde o momento zero.
+
+<p align="center">
+  <img src="./assets/04-initial-ec2-instances.png" alt="Instâncias Iniciais" width="800"/>
+</p>
+
+### 3. Simulação de Pico de Tráfego (Stress Test)
+
+Para testar a resiliência, foi gerada uma carga artificial na aplicação, elevando o consumo de processamento para simular um cenário de alto volume de requisições no backend.
+
+<p align="center">
+  <img src="./assets/05-cpu-stress-test-active.png" alt="Teste de CPU" width="600"/>
+</p>
+
+### 4. Monitoramento e Ação do CloudWatch
+
+O CloudWatch identificou que a média de CPU do cluster ultrapassou o gatilho estabelecido (**50%**) e disparou o status de alarme, notificando o Auto Scaling.
+
+<p align="center">
+  <img src="./assets/06-cloudwatch-alarm-high-cpu.png" alt="Alarme CloudWatch" width="800"/>
+</p>
+
+### 5. Escalonamento Horizontal Automático (Scale-Out)
+
+Em resposta ao alarme, a infraestrutura provisionou automaticamente novas instâncias EC2. O Load Balancer imediatamente começou a direcionar parte do tráfego para essas novas máquinas, estabilizando o sistema.
+
+<p align="center">
+  <img src="./assets/07-autoscaling-action-new-instances.png" alt="Novas Instâncias EC2" width="800"/>
+  <br><em>A frota escalou automaticamente para distribuir a carga pesada.</em>
+</p>
+
+---
+
+## 💡 Impacto no Desenvolvimento Backend (Java/Spring)
+
+Construir essa infraestrutura reforça conceitos críticos para o desenvolvimento de software corporativo:
+
+1. **APIs Stateless:** Como o Load Balancer distribui o tráfego dinamicamente para _qualquer_ instância, a aplicação Spring Boot não pode armazenar sessão na memória local (`HttpSession`). É necessário usar tokens JWT ou externalizar sessões (ex: Redis).
+2. **Health Checks Confiáveis:** O endpoint de verificação (`/actuator/health` no Spring) deve ser leve, mas preciso, validando a conexão com o banco de dados para evitar que o Load Balancer envie tráfego para uma instância "morta".
+3. **Tempos de Inicialização (Startup Time):** Em momentos de pico, novas instâncias precisam subir rápido. Aplicações pesadas demoram a entrar no ar, atrasando o Auto Scaling. Isso justifica otimizações arquiteturais e uso de imagens enxutas.
+
+---
+
+## 📞 Contato e Redes
+
+Gostou do projeto ou quer trocar ideias sobre Cloud AWS, Java, Spring Boot e arquitetura de software? Fique à vontade para me contatar:
+
+- [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/luisfernando-eng)
+- [![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:luizfer.12321@gmail.com)
