@@ -36,6 +36,16 @@ A arquitetura foi refatorada para isolar a camada de aplicação e distribuir a 
 
 ---
 
+## 🎥 Dinâmica: O Auto Scaling em Ação
+
+Abaixo, a representação visual de como a arquitetura reage a um pico de demanda. Quando o tráfego aumenta e o alarme do CloudWatch é acionado, o Auto Scaling provisiona automaticamente novas instâncias para dividir a carga com o Load Balancer:
+
+<p align="center">
+  <img src="./diagrams/autoscaling-demo.gif" alt="Animação do Fluxo de Auto Scaling" width="800"/>
+</p>
+
+---
+
 ## 🛠️ Tecnologias e Componentes AWS Utilizados
 
 - **VPC & Networking:** Sub-redes Públicas (para o ALB) e Privadas (para o Backend).
