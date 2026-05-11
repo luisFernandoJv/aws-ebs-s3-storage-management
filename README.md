@@ -48,6 +48,10 @@ O ambiente simula um cenário real de produção: um servidor ativo (Processor) 
               └───────────────────────────────┘
 ```
 
+## Diagrama
+
+![Arquitetura final](diagrams/architecture.png)
+
 ---
 
 ## O que foi implementado
